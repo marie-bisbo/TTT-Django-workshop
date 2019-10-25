@@ -1,6 +1,6 @@
-#Setting up a project
+# Setting up a project
 
-##Installing Django
+## Installing Django
 
 Start by installing django. Run:
 
@@ -8,7 +8,7 @@ Start by installing django. Run:
 
 This also sets up your virtual environment.
 
-##Starting a new project
+## Starting a new project
 
 To start a new django project, run the following inside your virtual environment:
 
@@ -25,7 +25,7 @@ You should now have a folder with the name of your project containing another fo
 
 If you use one of these: `python manage.py runserver`, you can verify that the Django installation is correctly installed. Navigate to 127.0.0.1:8000 and you should see Django splashscreen with a rocket flying
 
-##Creating an app
+## Creating an app
 
 At this point you want to start a new "app." This is how django manages the different parts of your site. Run:
 
