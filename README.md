@@ -39,3 +39,5 @@ At this point you want to start a new "app." This is how django manages the diff
  * models.py
  * tests.py
  * views.py
+ 
+ Add your app to the `settings.py` file. Under INSTALLED_APPS add the name of your app as a string. Don't forget to add a comma at the end! 
