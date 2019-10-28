@@ -1,6 +1,5 @@
 .idea/*
 db.sqlite3
 __pycache__
-jokes_test.py
 .mypy_cache/
 .pytest_cache/
