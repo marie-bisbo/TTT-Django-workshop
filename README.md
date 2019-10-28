@@ -63,12 +63,22 @@ This will map the index of our greeter app to the `index()` in our `views.py`.
 The base URL router will need to be pointed towards the `urls.py` of our greeter app so that it can serve it. Add the following line to the `urlpatterns` array in our base `urls.py`:
 `path('', include('greeter.urls')),` (You'll need to add `include` to your imports from `django.urls` for this step).
 
-To ensure your URL mapping is working fine, try defining index in your `views.py` as the following and verifying the text is displayed when you navigate to `127.0.0.1:8000`
+To ensure your URL mapping is working fine, try defining index in your `views.py` as the following.
+
 
 ```
-from django.http import HttpResponse
+from django.shortcuts import render
 
 
 def index(request):
-    return HttpResponse("Hello, world. You're at the greeter index.")
+    return render(request, 'greeter/index.html')
+```
+
+This code will return a file from `greeter/index.html` within the templates folder. Templates are essentially where we store our `HTML` files to be rendered, for our sake we'll want to make one within our greeter app (templates/greeter). The additional greeter is used to namespace `HTML` files within as Django will look in all available templates folders for files otherwise, leading to possible conflicts.
+
+We'll want to create an index.html in our newly created directory then, we'll want to take an input and have a button to submit it, the following will do fine:
+
+```
+<input></input>
+<button>Submit</button>
 ```
