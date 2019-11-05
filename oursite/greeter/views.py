@@ -1,5 +1,8 @@
-from django.shortcuts import render
+import json
+from rest_framework import viewsets
+from .greeter import joke
 
 
-def index(request):
-    return render(request, 'greeter/index.html')
+class SubmitViewSet(viewsets.ViewSet):
+    def create(self, request):
+        return joke(request.data["searchTerm"])
