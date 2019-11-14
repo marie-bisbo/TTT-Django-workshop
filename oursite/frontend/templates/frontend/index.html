@@ -1,21 +1,40 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <script type="module" src="/JokeApi.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js"></script>
 </head>
+
 <body>
-<p>Tell me a joke</p>
-<input id="searchTermInput"></input>
-<button onclick="submitJokeRequest()">Submit</button>
-<script>
-    function submitJokeRequest() {
-        var inputValue = document.getElementById("searchTermInput").value;
-        console.log("Hi");
-        // jokeApi.submit(inputValue).then(data => {
-        //     console.log("Hello");
-        //     console.log(data);
-        // });
-    }
-</script>
+    <p>Tell me a joke</p>
+    <input id="searchTermInput"></input>
+    <button onclick="submitJokeRequest()">Submit</button>
+    <p>Here's your joke:
+        <span id="joke"></span>
+    </p>
+    <script>
+        axios.defaults.xsrfCookieName = 'csrftoken';
+        axios.defaults.xsrfHeaderName = 'X-CSRFToken';
+
+        function submitJokeRequest() {
+            var inputValue = document.getElementById("searchTermInput").value;
+            this.axiosSubmit(inputValue).then(data => {
+                document.getElementById("joke").innerHTML = data;
+            });
+        }
+
+        function axiosSubmit(searchTerm) {
+            const url = '/api/submit/';
+            const data = {
+                'searchTerm': searchTerm
+            };
+            return axios.post(url, data)
+                .then(response => response.data)
+                .catch((e) => {
+                    console.log(e);
+                });
+        }
+    </script>
 </body>
+
 </html>
