@@ -81,14 +81,23 @@ This code will return a file from `frontend/index.html` within the templates fol
 
 To ensure that Django can see your template, add the following line to the `TEMPLATES` array in `oursite/settings.py`: `os.path.join(BASE_DIR, "frontend/templates")`
 
-We'll want to create an index.html in our newly created directory then, we'll want to take an input and have a button to submit it, the following will do fine:
+We'll want to create an index.html in our newly created directory then, we'll want to take an input and have a button to submit it, the following will do fine for now:
 
 ```
-<input></input>
-<button>Submit</button>
-```
+<!DOCTYPE html>
+<html>
 
-Use the command `python manage.py createsuperuser` to create an admin user capable of accessing 127.0.0.1/admin (Which is a GUI we can use to view our data from)
+<body>
+    <p>Tell me a joke</p>
+    <input id="searchTermInput"></input>
+    <button onclick="submitJokeRequest()">Submit</button>
+    <p>Here's your joke:
+        <span id="joke"></span>
+    </p>
+</body>
+
+</html>
+```
 
 ### API
 
@@ -124,9 +133,117 @@ If we go to `127.0.0.1/api/submit` and feed it a JSON string (e.g {"searchTerm":
 
 ### Hooking up the API to the frontend
 
-We'll want to use Axios to handle our API calls from the frontend. We're going to need to setup npm in our frontend directory (oursite/frontend) to achieve this (If you don't have node, shame on you, use `brew install node`):
+We'll want to use Axios to handle our API calls from the frontend. To this end we're going to edit our index.html a bit to pull a web version of axios to use (In reality we'd probably want to `npm install axios` and import it from our node_modules, however this is a bit of a faff without a web framework in place so we're going to use a very rudimentary API implementation instead).
+Update your index.html with the following `<head>` tag (importing `axios`) as well as the `<script>` tag at the bottom (Setting the behaviour of our button).
 
-* `npm init` - You can just hit enter through the requisitioned details here, they're not important for our use-case
-* `npm install axios`
+```
+<!DOCTYPE html>
+<html>
 
-As a sanity check you should now have a `node_modules` folder in the frontend directory as well as a package.json + package-lock.json.
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js"></script>
+</head>
+
+<body>
+    <p>Tell me a joke</p>
+    <input id="searchTermInput"></input>
+    <button onclick="submitJokeRequest()">Submit</button>
+    <p>Here's your joke:
+        <span id="joke"></span>
+    </p>
+    <script>
+        axios.defaults.xsrfCookieName = 'csrftoken';
+        axios.defaults.xsrfHeaderName = 'X-CSRFToken';
+
+        function submitJokeRequest() {
+            var inputValue = document.getElementById("searchTermInput").value;
+            this.axiosSubmit(inputValue).then(data => {
+                document.getElementById("joke").innerHTML = data;
+            });
+        }
+
+        function axiosSubmit(searchTerm) {
+            const url = '/api/submit/';
+            const data = {
+                'searchTerm': searchTerm
+            };
+            return axios.post(url, data)
+                .then(response => response.data)
+                .catch((e) => {
+                    console.log(e);
+                });
+        }
+    </script>
+</body>
+
+</html>
+```
+
+If you reload the website and type a search term into our input field and hit enter, you should be met with a hilarious joke. To break down what's going on:
+
+* When we hit our button, we call the method `submitJokeRequest()`
+* This in turn pulls the value of our input field and passes it to `axiosSubmit()`
+* `axiosSubmit()` forms a `json` from the searchTerm and posts it to `/api/submit/`, this being mapped to `SubmitViewSet` earlier by us
+* `SubmitViewSet` is set to call the `joke()` method in `greeter.py` and thus calls this with the `json` that we passed to it and returns the result to `axiosSubmit()`
+* `axiosSubmit()` returns this value via `response.data` to `submitJokeRequest()` which then updates our `<span>` element with the data (joke) returned.
+
+### Storing data
+
+As an additional point, you may be interested in saving the data your users have input into Django's database (SQLite by default). The process for this is fairly straight forwards as the following should hopefully demonstrate. The first thing we'll want to do is define a model for our data, this is the format (like an object) our data will be stored into in the database, add the following class to `models.py` in our greeter app:
+
+```
+class SearchTermModel(models.Model):
+    search_term = models.CharField(max_length=500)
+
+    def __str__(self):
+        return f"{self.search_term}"
+
+```
+
+(`def __str__` determines how the data will be output in our frontend within the Django admin page, to be seen later)
+
+Following this we'll want to define a serializer; the serializer is responsible for placing our data into a model and saving it. Add the following code in a new file named `serializers.py` within the greeter app:
+
+```
+from rest_framework import serializers
+from .models import SearchTermModel
+
+class SearchTermSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SearchTermModel
+
+    def create(self, search_term) -> SearchTermModel:
+        return SearchTermModel(search_term=search_term)
+```
+
+Finally, we'll want to update our `views.py` so that it not only returns a call to our `joke()` method, but also uses our serializer to save our input data into a model for our database. Update our `SubmitViewSet` to the following:
+
+```
+from rest_framework import viewsets
+from .greeter import joke
+from .serializers import SearchTermSerializer
+
+
+class SubmitViewSet(viewsets.ViewSet):
+    def create(self, request):
+        search_term_serializer = SearchTermSerializer()
+        search_term_object = search_term_serializer.create(
+            search_term=request.data["searchTerm"]
+        )
+        search_term_object.save()
+        return joke(request.data["searchTerm"])
+
+```
+
+To register our changes, we'll need to run the following commands: `python manage.py makemigrations` followed by `python manage.py migrate` (Explanation from Marie here about migrations)
+That's it! Our website is now setup to save our user's input search terms into a `SearchTermModel` facilitated by our `SearchTermSerializer`. There is one quick additional step we'll want to make if we want a frontend interface with which to view our saved data. Add the following lines into greeter app's `admin.py`:
+
+```
+from .models import SearchTermModel
+
+admin.site.register(SearchTermModel)
+```
+
+These lines simply tell the Django's admin interface to display `SearchTermModels` on its frontend. We'll need an admin user to access this display which can be done easily with the following command: `python manage.py createsuperuser`
+
+After navigating to `127.0.0.1/admin` and logging in with your created user, you should see an additional tab named Greeter with a 'Search term models' option within. Following that link, you should see your search terms saved from the frontend input (The way they are displayed is determined by our `__str__` method we wrote earlier!)
