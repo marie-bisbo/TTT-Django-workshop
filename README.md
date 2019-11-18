@@ -191,7 +191,9 @@ If you reload the website and type a search term into our input field and hit en
 
 As an additional point, you may be interested in saving the data your users have input into Django's database (SQLite by default). The process for this is fairly straight forwards as the following should hopefully demonstrate.
 
-The first thing we'll want to do is define a model for our data, this is the format (like an object) our data will be stored into in the database, add the following class to `models.py` in our greeter app:
+1. The first thing we'll want to do is define a model for our data, this is the format (like an object) our data will be stored into in the database, add the following class to `models.py` in our greeter app (`def __str__` determines how the data will be output in our frontend within the Django admin page, to be seen later)
+:
+
 
 ```
 class SearchTermModel(models.Model):
@@ -202,9 +204,8 @@ class SearchTermModel(models.Model):
 
 ```
 
-(`def __str__` determines how the data will be output in our frontend within the Django admin page, to be seen later)
 
-Following this we'll want to define a serializer; the serializer is responsible for placing our data into a model and saving it. Add the following code in a new file named `serializers.py` within the greeter app:
+2. Following this we'll want to define a serializer; the serializer is responsible for placing our data into a model and saving it. Add the following code in a new file named `serializers.py` within the greeter app:
 
 ```
 from rest_framework import serializers
@@ -218,7 +219,7 @@ class SearchTermSerializer(serializers.ModelSerializer):
         return SearchTermModel(search_term=search_term)
 ```
 
-Finally, we'll want to update our `views.py` so that it not only returns a call to our `joke()` method, but also uses our serializer to save our input data into a model for our database. Update our `SubmitViewSet` to the following:
+3. Finally, we'll want to update our `views.py` so that it not only returns a call to our `joke()` method, but also uses our serializer to save our input data into a model for our database. Update our `SubmitViewSet` to the following:
 
 ```
 from rest_framework import viewsets
@@ -237,7 +238,7 @@ class SubmitViewSet(viewsets.ViewSet):
 
 ```
 
-To register our changes, we'll need to run the following commands: `python manage.py makemigrations` followed by `python manage.py migrate` (Explanation from Marie here about migrations)
+4. To register our changes, we'll need to run the following commands: `python manage.py makemigrations` followed by `python manage.py migrate` (Explanation from Marie here about migrations)
 
 That's it! Our website is now setup to save our user's input search terms into a `SearchTermModel` facilitated by our `SearchTermSerializer`. There is one quick additional step we'll want to make if we want a frontend interface with which to view our saved data. Add the following lines into greeter app's `admin.py`:
 
