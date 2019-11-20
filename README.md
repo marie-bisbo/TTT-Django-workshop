@@ -8,8 +8,8 @@ with a web development framework sets you up with an initial load of stuff. This
 
 ## Why Django? 
 
-Django is a really popular web development framework, for a number of reasons. The first thing to note is that it's built on python. It also comes with a lot of the aforementioned stuff.
- The main aim of django is to be fast and simple, as well as secure. It is also well maintained, so you can generally expect it to be running smoothly. 
+Django is a really popular web development framework, for a number of reasons. The first thing to note is that it's built on Python and comes with a lot of the aforementioned benefits.
+The main aim of django is to be fast and simple, as well as secure. It is also well maintained, so you can generally expect it to be running smoothly. 
 Django has been used to build quite a few big websites, including Instagram, Spotify and NASA. 
 
 Keep in mind that Django mostly handles backend functionality of web applications. That is, the databases that store information, the logic and generally how things work. On the 
@@ -309,39 +309,41 @@ class Migration(migrations.Migration):
     ]
  ```
  
- When you then run the migrate command, you get a notification that your migrations are being applied, hopefully followed by a green ok. 
+When you then run the migrate command, you get a notification that your migrations are being applied, hopefully followed by a green ok. 
  
  ## When do you have to think about migrations 
   
- You will have found that when you first run your project on the server with runserver, you are informed of a number of unapplied migrations. 
- You can run `pipenv run python manage.py migrate --list` to see them.  
- These arise from built in Django functionality, and you don't have to worry about them straight away. 
- Migrations appear when you create and alter what Django calls models. Models store information about data that you're storing in your django project.
-  It generally works like a regular class would, and so you would generally follow the same principles in creating one. Your model should be an
-   objects with certain attributes, for example you could have a Brainlabber model with a name, a job and an avatar. Models are described in detail in the 
-   [django documentation](https://docs.djangoproject.com/en/2.2/topics/db/models/).   
+You will have found that when you first run your project on the server with `python manage.py runserver`, you are informed of a number of unapplied migrations. 
+You can run `pipenv run python manage.py migrate --list` to see them.  
+These arise from built in Django functionality, and you don't have to worry about them straight away. 
+Migrations appear when you create and alter what Django calls models. Models store information about data that you're storing in your Django project. It generally works like a regular class would, and so you would generally follow the same principles in creating one. Your model should be essentially be an object with certain attributes.
+   
+   For example you could have a Brainlabber model with a:
+   * Name
+   * Job
+   * Avatar
+   
+Models are described in detail in the 
+[Django documentation](https://docs.djangoproject.com/en/2.2/topics/db/models/).   
    
  ## What are migrations
  
- Migrations are actually database migrations. To store data, django uses a database, by default sqlite3, but this can be changed if needed.
- But django recognised that working directly with the database with something like SQL would be cumbersome for most, and so they made things easier.
-  The way it works is that when you create or alter a model and makemigrations, django turns this into the file we saw above, which calls on some inbuilt
-  django functionality that can read your model fields and turn them into SQL, and when you then apply those migrations, it applies these changes to the database.
-  Each model is a table, with each of the fields in your model as a column, and each instance of your model is then subsequently added as a row. 
+ Migrations are actually database migrations. To store data, Django uses a database, by default sqlite3, but this can be changed if needed.
+The way it works is that when you create or alter a model and makemigrations, Django turns this into the file we saw above, which calls on some inbuilt Django functionality that can read your model fields and translate them into SQL. When you then apply those migrations, it applies these changes to the database.
+Each model is a table, with each of the fields in your model as a column, and each instance of your model is then subsequently added as a row. 
   
-  The process of making migrations and then migrating is analogous to adding files to the staging area and then commiting them in git. 
+The process of making migrations and then migrating is analogous to adding files to the staging area and then commiting them in git. 
   
-  The process of migrations can make data management a lot easier, however be aware that there are situations when you need to be careful. Read the [django documentation](https://docs.djangoproject.com/en/2.2/topics/migrations/) on migrations
-  for more details.
-  
-  # Serializers
-  
-  ## What are serializers
-  
-  ```text
-"Serializers allow complex data such as querysets and model instances to be converted to native Python datatypes that can then be easily rendered into JSON, XML or 
-other content types. Serializers also provide deserialization, allowing parsed data to be converted back into complex types, after first validating the incoming data."
-```
+The process of migrations can make data management a lot easier, however be aware that there are situations when you need to be careful. Read the [Django documentation](https://docs.djangoproject.com/en/2.2/topics/migrations/) on migrations
+for more details.
+
+# Serializers
+
+## What are serializers
+
+>"Serializers allow complex data such as querysets and model instances to be converted to native Python datatypes that can >then be easily rendered into JSON, XML or 
+>other content types. Serializers also provide deserialization, allowing parsed data to be converted back into complex >types, after first validating the incoming data."
+
 
 A QuerySet is a list of objects in a model, allowing you to read, edit and order the data in your database. 
 
@@ -349,22 +351,19 @@ Serializers are not built into Django, but can be imported through the Django Re
 
 ## Why use serializers
 
-When you create a model in django, you usually save instances of this model to a database, which you can access and interact with. However the format in which your data exists
-is not necessarily the best format to work with. Serializing the data means you can convert complex datatypes such as the ones that arise in databases, into native Python datatypes that can
-be rendered into something like JSON.   
+When you create a model in Django, you usually save instances of this model to a database, which you can access and interact with. However the format in which your data exists is not necessarily the best format to work with. Serializing the data means you can convert complex datatypes, such as the ones that arise in databases, into native Python datatypes that can be rendered into something like JSON.   
   
- # Interacting with your models and database - the django interactive console
+ # Interacting with your models and database - the Django interactive console
  
- Once you have made a model, the next step is to start populating it. There are two main ways to interact with a model. One is in the django admin page, accessed by going to 
- `http://127.0.0.1:8000/admin`. Here you can see you model, as well as add, amend and delete instances of the model. The admin page is a nice interactive feature of django,
- and makes this very easy.
- 
- A second way you can interact with your models is through the django shell. This comes with django, and adds some nice features to you regular shell. To access it, run:
- 
- `pipenv run python manage.py shell`
- 
- This opens up an ineractive console. To see a list of objects in a model, you can run:
- 
+Once you have made a model, the next step is to start populating it. There are two main ways to interact with a model. One is in the django admin page, accessed by going to 
+`http://127.0.0.1:8000/admin`. Here you can see you model, as well as add, amend and delete instances of the model. The admin page is a nice interactive feature of Django and makes these operations very easy.
+
+A second way you can interact with your models is through the Django shell. This comes with Django, and adds some nice features to you regular shell. To access it, run:
+
+`pipenv run python manage.py shell`
+
+This opens up an ineractive console. To see a list of objects in a model, you can run:
+
 `from [app_name].models import [model_name]`
 
 followed by:
@@ -384,4 +383,4 @@ This object is now saved to the database, and you can see it both in the interac
 For more details on this process, see this [article](https://www.codementor.io/overiq/basics-of-django-orm-cwamhcerp). 
 
 
-  
+
