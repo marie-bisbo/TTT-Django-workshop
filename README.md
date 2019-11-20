@@ -343,6 +343,8 @@ class Migration(migrations.Migration):
 other content types. Serializers also provide deserialization, allowing parsed data to be converted back into complex types, after first validating the incoming data."
 ```
 
+A QuerySet is a list of objects in a model, allowing you to read, edit and order the data in your database. 
+
 Serializers are not built into Django, but can be imported through the Django Rest Framework, which we installed at the start. See the [documentation](https://www.django-rest-framework.org/api-guide/serializers/) for full details. 
 
 ## Why use serializers
@@ -352,4 +354,34 @@ is not necessarily the best format to work with. Serializing the data means you 
 be rendered into something like JSON.   
   
  # Interacting with your models and database - the django interactive console
+ 
+ Once you have made a model, the next step is to start populating it. There are two main ways to interact with a model. One is in the django admin page, accessed by going to 
+ `http://127.0.0.1:8000/admin`. Here you can see you model, as well as add, amend and delete instances of the model. The admin page is a nice interactive feature of django,
+ and makes this very easy.
+ 
+ A second way you can interact with your models is through the django shell. This comes with django, and adds some nice features to you regular shell. To access it, run:
+ 
+ `pipenv run python manage.py shell`
+ 
+ This opens up an ineractive console. To see a list of objects in a model, you can run:
+ 
+`from [app_name].models import [model_name]`
+
+followed by:
+
+`[model_name].objects.all`
+
+You can also make a new object in your model by running:
+
+`[variable_name] = [model_name]([arguments])`
+
+followed by:
+
+`[variable_name].save()`
+
+This object is now saved to the database, and you can see it both in the interactive console as well as on the admin page.
+
+For more details on this process, see this [article](https://www.codementor.io/overiq/basics-of-django-orm-cwamhcerp). 
+
+
   
