@@ -57,6 +57,8 @@ folder with the same name alongside a file `manage.py`. The nested folder with y
 
 If you use one of these: `python manage.py runserver`, you can verify that the Django installation is correctly installed. Navigate to `127.0.0.1:8000` and you should see Django splashscreen with a rocket flying
 
+#Creating an App
+
 ## Creating an app
 
 At this point you want to start a new "app." This is how django manages the different parts of your site. Run:
@@ -76,7 +78,7 @@ At this point you want to start a new "app." This is how django manages the diff
 
 As well as this, create an app named 'frontend', this is where we'll be hosting the actual display of our website. The greeter app will be used to handle script logic. (Make sure to repeat the steps about adding the app to `settings.py`)
 
-## Hooking up URLs
+## Setting up Frontend urls
 
 We first need to create a `urls.py` file in frontend, this is going to act as a sort-of router for web requests.
 
@@ -127,7 +129,7 @@ We'll want to create an index.html in our newly created directory then, we'll wa
 </html>
 ```
 
-### API
+### Setting up Backend urls
 
 We're going to want to setup a URL where API calls will be redirected to and handled. To this end, add the following line to your `urls.py` in oursite: `path("api/", include("greeter.urls"))`. Similar to our frontend example, we're now going to want to create a `urls.py` in greeter which will tell Django what to do with any /api requests.
 
@@ -159,7 +161,7 @@ We should now be able to access `127.0.0.1/api` (Which should show us a list of 
 
 If we go to `127.0.0.1/api/submit` and feed it a JSON string (e.g {"searchTerm": "test"}), we should see response text shown from the application. Our API is communicating with our tool!
 
-### Hooking up the API to the frontend
+### Hooking up the API urls to the Frontend
 
 We'll want to use Axios to handle our API calls from the frontend. To this end we're going to edit our index.html a bit to pull a web version of axios to use (In reality we'd probably want to `npm install axios` and import it from our node_modules, however this is a bit of a faff without a web framework in place so we're going to use a very rudimentary API implementation instead).
 Update your index.html with the following `<head>` tag (importing `axios`) as well as the `<script>` tag at the bottom (Setting the behaviour of our button).
