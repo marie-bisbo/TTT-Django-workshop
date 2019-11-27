@@ -157,14 +157,14 @@ class SubmitViewSet(viewsets.ViewSet):
         return joke(request.data["searchTerm"])
 ```
 
-Our `joke` method will also need to be slightly modified so that it returns a `rest_framework response` from our API call. Add the following imports into `greeter/greeter.py`:
+Our `joke` method will also need to be slightly modified so that it returns a `rest_framework Response` from our API call. Add the following imports into `greeter/greeter.py`:
 
 ```
 from rest_framework import status
 from rest_framework.response import Response
 ```
 
-and add this line after our `print(api_response)` line:
+and add this line after our `print(api_response)` lines:
 
 `return Response(api_response, status=status.HTTP_200_OK)`
 
