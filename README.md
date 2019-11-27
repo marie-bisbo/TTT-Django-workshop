@@ -129,7 +129,7 @@ We'll want to create an index.html in our newly created directory then, we'll wa
 </html>
 ```
 
-### Setting up Backend urls
+### Setting up Backend (API) urls
 
 We're going to want to setup a URL where API calls will be redirected to and handled. To this end, add the following line to your `urls.py` in oursite: `path("api/", include("greeter.urls"))`. Similar to our frontend example, we're now going to want to create a `urls.py` in greeter which will tell Django what to do with any `/api` requests.
 
