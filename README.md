@@ -35,7 +35,7 @@ Alternatively, run:
 
 `make install`
 
-which will run the same commands. 
+which will run the same commands.
 
 This also sets up your virtual environment, jump into it with `pipenv shell`.
 
@@ -45,7 +45,7 @@ To start a new django project, run the following inside your virtual environment
 
 ```django-admin startproject [project name]```
 
-You should now have a folder with the name of your project containing another 
+You should now have a folder with the name of your project containing another
 folder with the same name alongside a file `manage.py`. The nested folder with your project name should contain the following:
 
 * \_\_init__.py
@@ -74,7 +74,7 @@ At this point you want to start a new "app." This is how django manages the diff
  * tests.py
  * views.py
 
- Add your app to the `settings.py` file. Under INSTALLED_APPS add the name of your app as a string `appname`('greeter'). Don't forget to add a comma at the end! While you're here, add in `rest_framework` too as we'll be using this later.
+ Add your app to `oursite/settings.py` file. Under INSTALLED_APPS add the name of your app as a string `appname`('greeter'). Don't forget to add a comma at the end! While you're here, add in `rest_framework` too as we'll be using this later.
 
 As well as this, create an app named 'frontend', this is where we'll be hosting the actual display of our website. The greeter app will be used to handle script logic. (Make sure to repeat the steps about adding the app to `settings.py`)
 
@@ -93,7 +93,7 @@ urlpatterns = [
 
 This will map the default location of our app to the `index()` in our `views.py`. Views are essentially Python functions or classes that return a web response back after use.
 
-The base URL router will need to be pointed towards the `urls.py` of our frontend app so that it can serve it. Add the following line to the `urlpatterns` array in our base `urls.py`:
+The base URL router will need to be pointed towards the `urls.py` of our frontend app so that it can serve it. Add the following line to the `urlpatterns` array in `oursite/urls.py`:
 `path('', include('frontend.urls')),` (You'll need to add `include` to your imports from `django.urls` for this step).
 
 To ensure your URL mapping is working fine, try defining index in your `views.py` as the following.
@@ -131,7 +131,7 @@ We'll want to create an index.html in our newly created directory then, we'll wa
 
 ### Setting up Backend urls
 
-We're going to want to setup a URL where API calls will be redirected to and handled. To this end, add the following line to your `urls.py` in oursite: `path("api/", include("greeter.urls"))`. Similar to our frontend example, we're now going to want to create a `urls.py` in greeter which will tell Django what to do with any /api requests.
+We're going to want to setup a URL where API calls will be redirected to and handled. To this end, add the following line to your `urls.py` in oursite: `path("api/", include("greeter.urls"))`. Similar to our frontend example, we're now going to want to create a `urls.py` in greeter which will tell Django what to do with any `/api` requests.
 
 ```
 from django.urls import include, path
@@ -156,6 +156,17 @@ class SubmitViewSet(viewsets.ViewSet):
     def create(self, request):
         return joke(request.data["searchTerm"])
 ```
+
+Our `joke` method will also need to be slightly modified so that it returns a `rest_framework response` from our API call. Add the following imports into `greeter/greeter.py`:
+
+```
+from rest_framework import status
+from rest_framework.response import Response
+```
+
+and add this line after our `print(api_response)` line:
+
+`return Response(api_response, status=status.HTTP_200_OK)`
 
 We should now be able to access `127.0.0.1/api` (Which should show us a list of our API operations, in this case just 'submit') and even further `127.0.0.1/api/submit` which lets us post JSON to our application.
 
