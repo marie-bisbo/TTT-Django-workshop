@@ -3,11 +3,11 @@ install:
 	pipenv install djangorestframework
 	pipenv install requests
 up:
-	pipenv run python manage.py runserver
+	python manage.py runserver
 
 makemig:
-	pipenv run python manage.py makemigrations
+	python manage.py makemigrations
 
 migrate:
-	pipenv run python manage.py migrate
+	python manage.py migrate
 
