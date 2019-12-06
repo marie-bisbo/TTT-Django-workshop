@@ -57,8 +57,6 @@ folder with the same name alongside a file `manage.py`. The nested folder with y
 
 If you use one of these: `python manage.py runserver`, you can verify that the Django installation is correctly installed. Navigate to `127.0.0.1:8000` and you should see Django splashscreen with a rocket flying
 
-#Creating an App
-
 ## Creating an app
 
 At this point you want to start a new "app." This is how django manages the different parts of your site. Run:
