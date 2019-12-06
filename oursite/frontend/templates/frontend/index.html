@@ -9,9 +9,9 @@
     <p>Tell me a joke</p>
     <input id="searchTermInput"></input>
     <button onclick="submitJokeRequest()">Submit</button>
-    <p>Here's your joke:
+    <p><i>Here's your joke:
         <span id="joke"></span>
-    </p>
+    </i></p>
     <script>
         axios.defaults.xsrfCookieName = 'csrftoken';
         axios.defaults.xsrfHeaderName = 'X-CSRFToken';
