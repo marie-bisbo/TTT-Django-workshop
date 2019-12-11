@@ -4,7 +4,7 @@
 
 There are currently a plethora of web development frameworks out there to choose from. Generally, you would choose to use one of them to standardise the process, as
 well as make use of the inbuilt features that (hopefully at least) make certain things faster to do and easier to manage. This is why you'll find that starting a project
-with a web development framework sets you up with an initial set of boilerplate code. This includes libraries and templates for interactin with different aspects of your website.  
+with a web development framework sets you up with an initial set of boilerplate code. This includes libraries and templates for interacting with different aspects of your website.  
 
 ## Why Django? 
 
