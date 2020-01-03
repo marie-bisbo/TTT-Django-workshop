@@ -55,7 +55,7 @@ folder with the same name alongside a file `manage.py`. The nested folder with y
 
 `manage.py` contains various management functions used in setting up Django. You should NEVER have to edit this file, so don't.
 
-If you use one of these: `python manage.py runserver`, you can verify that the Django installation is correctly installed. Navigate to `127.0.0.1:8000` and you should see Django splashscreen with a rocket flying
+Change directory into your Django project and run the command: `python manage.py runserver` to verify that the Django is correctly installed. Navigate to `127.0.0.1:8000` and you should see the Django splashscreen with a rocket flying.
 
 ## Creating an app
 
@@ -72,7 +72,7 @@ At this point you want to start a new "app." This is how django manages the diff
  * tests.py
  * views.py
 
- Add your app to `oursite/settings.py` file. Under INSTALLED_APPS add the name of your app as a string `appname`('greeter'). Don't forget to add a comma at the end! While you're here, add in `rest_framework` too as we'll be using this later.
+ Add your app to `oursite/settings.py` file: Under INSTALLED_APPS add the name of your app as a string `appname`('greeter'). Don't forget to add a comma at the end! While you're here, add in `rest_framework` too as we'll be using this later.
 
 As well as this, create an app named 'frontend', this is where we'll be hosting the actual display of our website. The greeter app will be used to handle script logic. (Make sure to repeat the steps about adding the app to `settings.py`)
 
@@ -94,7 +94,7 @@ This will map the default location of our app to the `index()` in our `views.py`
 The base URL router will need to be pointed towards the `urls.py` of our frontend app so that it can serve it. Add the following line to the `urlpatterns` array in `oursite/urls.py`:
 `path('', include('frontend.urls')),` (You'll need to add `include` to your imports from `django.urls` for this step).
 
-To ensure your URL mapping is working fine, try defining index in your `views.py` as the following.
+To ensure your URL mapping is working fine, try defining index in your frontend `views.py` as the following.
 
 
 ```
@@ -105,11 +105,27 @@ def index(request):
     return render(request, 'frontend/index.html')
 ```
 
-This code will return a file from `frontend/index.html` within the templates folder. Templates are essentially where we store our `HTML` files to be rendered, for our sake we'll want to make one within our frontend app (templates/frontend). The additional frontend is used to namespace `HTML` files within as Django will look in all available templates folders for files otherwise, leading to possible conflicts.
+This code will return a file from `frontend/index.html` within the templates folder. Templates are essentially where we store our `HTML` files to be rendered. 
+For our sake we'll want to make one within our frontend app (`templates/frontend`). Create a new set of directories within our `frontend` app as follows:
 
-To ensure that Django can see your template, add the following line to the `TEMPLATES` array in `oursite/settings.py`: `os.path.join(BASE_DIR, "frontend/templates")`
+```
+frontend
+ - templates
+    - frontend
+ - __init__.py
+ - admin.py
+ - apps.py
+ - models.py
+ - tests.py
+ - urls.py
+ - views.py
+```
 
-We'll want to create an index.html in our newly created directory then, we'll want to take an input and have a button to submit it, the following will do fine for now:
+The additional frontend is used to namespace `HTML` files within as Django will look in all available templates folders for files otherwise, leading to possible conflicts.
+
+To ensure that Django can see your template, add the following line to `TEMPLATES` > `DIRS` in our `settings.py`: `os.path.join(BASE_DIR, "frontend/templates")`
+
+We'll want to create an index.html in our newly created directory. We need it to take an input and have a button to submit it, the following will do fine for now:
 
 ```
 <!DOCTYPE html>
@@ -129,7 +145,7 @@ We'll want to create an index.html in our newly created directory then, we'll wa
 
 ### Setting up Backend (API) urls
 
-We're going to want to setup a URL where API calls will be redirected to and handled. To this end, add the following line to your `urls.py` in oursite: `path("api/", include("greeter.urls"))`. Similar to our frontend example, we're now going to want to create a `urls.py` in greeter which will tell Django what to do with any `/api` requests.
+We're going to want to setup a URL where API calls will be redirected to and handled. To this end, add the following line to your `urls.py` in oursite: `path("api/", include("greeter.urls"))`, *IMPORTANT* Ensure you add the trailing slash or this will not be served correctly. Similar to our frontend example, we're now going to want to create a `urls.py` in greeter which will tell Django what to do with any `/api` requests.
 
 ```
 from django.urls import include, path
@@ -149,13 +165,16 @@ If we create a basic view in `greeter/views.py`, we should be able to access the
 
 ```
 from rest_framework import viewsets
+from .greeter import joke
 
 class SubmitViewSet(viewsets.ViewSet):
     def create(self, request):
         return joke(request.data["searchTerm"])
 ```
 
-Our `joke` method will also need to be slightly modified so that it returns a `rest_framework Response` from our API call. Add the following imports into `greeter/greeter.py`:
+This viewset will be accessing our 'Joke()' method we defined earlier so ensure that this `greeter.py` is moved within the greeter directory.
+
+Our `joke` method will also need to be slightly modified so that it returns a `rest_framework Response` from our API call. Add the following imports into `greeter.py`:
 
 ```
 from rest_framework import status
@@ -173,7 +192,7 @@ If we go to `127.0.0.1/api/submit` and feed it a JSON string (e.g {"searchTerm":
 ### Hooking up the API urls to the Frontend
 
 We'll want to use Axios to handle our API calls from the frontend. To this end we're going to edit our index.html a bit to pull a web version of axios to use (In reality we'd probably want to `npm install axios` and import it from our node_modules, however this is a bit of a faff without a web framework in place so we're going to use a very rudimentary API implementation instead).
-Update your index.html with the following `<head>` tag (importing `axios`) as well as the `<script>` tag at the bottom (Setting the behaviour of our button).
+Update your index.html with the following `<head>` tag (importing `axios`) as well as the `<script>` tag at the bottom (Setting the behaviour of our button). Our new `index.html` should look like the following.
 
 ```
 <!DOCTYPE html>
@@ -240,7 +259,6 @@ class SearchTermModel(models.Model):
 
     def __str__(self):
         return f"{self.search_term}"
-
 ```
 
 
@@ -258,7 +276,7 @@ class SearchTermSerializer(serializers.ModelSerializer):
         return SearchTermModel(search_term=search_term)
 ```
 
-3. Finally, we'll want to update our `views.py` so that it not only returns a call to our `joke()` method, but also uses our serializer to save our input data into a model for our database. Update our `SubmitViewSet` to the following:
+3. Finally, we'll want to update our greeter's `views.py` so that it not only returns a call to our `joke()` method, but also uses our serializer to save our input data into a model for our database. Update our `SubmitViewSet` to the following:
 
 ```
 from rest_framework import viewsets
@@ -277,7 +295,7 @@ class SubmitViewSet(viewsets.ViewSet):
 
 ```
 
-4. To register our changes, we'll need to run the following commands: `python manage.py makemigrations` followed by `python manage.py migrate` (Explanation from Marie here about migrations)
+4. To register our changes, we'll need to run the following commands: `python manage.py makemigrations` followed by `python manage.py migrate`.
 
 That's it! Our website is now setup to save our user's input search terms into a `SearchTermModel` facilitated by our `SearchTermSerializer`. There is one quick additional step we'll want to make if we want a frontend interface with which to view our saved data. Add the following lines into greeter app's `admin.py`:
 
@@ -289,7 +307,7 @@ admin.site.register(SearchTermModel)
 
 These lines simply tell the Django's admin interface to display `SearchTermModels` on its frontend. We'll need an admin user to access this display which can be done easily with the following command: `python manage.py createsuperuser`
 
-After navigating to `127.0.0.1/admin` and logging in with your created user, you should see an additional tab named Greeter with a 'Search term models' option within. Following that link, you should see your search terms saved from the frontend input (The way they are displayed is determined by our `__str__` method we wrote earlier!)
+After navigating to `127.0.0.1/admin` and logging in with your created user, you should see an additional tab named Greeter with a 'Search term models' option within. Following that link, this is where you should see your search terms saved from the any future frontend input (The way they are displayed is determined by our `__str__` method we wrote earlier!)
 
 # Django Migrations
 
